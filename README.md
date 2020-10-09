@@ -59,10 +59,7 @@ The following demo shows the 3 different copy methods:
 
 ## Requirements
 
-- Linux Operating System
 - Python environment / Jython for Burp Suite
-- xclip (copy to clipboard)
-- notify-send (optional, if you like a notification)
 
 ## Installation
 
@@ -76,8 +73,8 @@ The extension will hopefully soon also be available in the Burp BApp Store.
 If you are testing in a virtual machine, the clipboard can be messed up when
 text is still selected after choosing a context menu entry. Therefore, when the
 copy method of selected response data is choosen, the copying process is
-started in a separate thread and copies the content after 2 seconds to the
-clipboard. So you have to wait 2 seconds before switching to your reporting
+started in a separate thread and copies the content after 1.5 seconds to the
+clipboard. So you have to wait 1.5 seconds before switching to your reporting
 tool.
 
 I know, this is an ugly hack. Better ideas / fixes / PRs are welcome!
