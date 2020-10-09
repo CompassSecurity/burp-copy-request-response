@@ -86,5 +86,3 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         temp.seek(0)
         subprocess.Popen(["xclip", "-in", "-selection", "clipboard"], stdin=temp)
         temp.close()
-
-        os.system("notify-send 'Copied to clipboard!'")
