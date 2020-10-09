@@ -2,6 +2,9 @@ from burp import IBurpExtender, IContextMenuFactory, IHttpRequestResponse
 from java.io import PrintWriter
 from java.util import ArrayList
 from javax.swing import JMenuItem
+from java.awt import Toolkit
+from java.awt.datatransfer import StringSelection
+from javax.swing import JOptionPane
 import subprocess
 import tempfile
 import threading
@@ -77,12 +80,8 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
 
-        temp = tempfile.TemporaryFile()
-        temp.write(data)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "primary"], stdin=temp)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "secondary"], stdin=temp)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "clipboard"], stdin=temp)
-        temp.close()
+        systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
+        systemSelection = Toolkit.getDefaultToolkit().getSystemSelection()
+        transferText = StringSelection(data)
+        systemClipboard.setContents(transferText, None)
+        systemSelection.setContents(transferText, None)
