@@ -80,7 +80,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
     def copyToClipboard(self, data, sleep=False):
         if sleep is True:
-            time.sleep(2)
+            time.sleep(1.5)
 
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
