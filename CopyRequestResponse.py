@@ -29,7 +29,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Full)",
                 actionPerformed=self.copyRequestFullResponseFull))
         menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Header)",
-                actionPerformed=self.copyRequestFullResponseFull))
+                actionPerformed=self.copyRequestFullResponseHeader))
         menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Header + Selected Data)",
                 actionPerformed=self.copyRequestFullResponseHeaderData))
 
