@@ -2,6 +2,9 @@ from burp import IBurpExtender, IContextMenuFactory, IHttpRequestResponse
 from java.io import PrintWriter
 from java.util import ArrayList
 from javax.swing import JMenuItem
+from java.awt import Toolkit
+from java.awt.datatransfer import StringSelection
+from javax.swing import JOptionPane
 import subprocess
 import tempfile
 import threading
@@ -28,8 +31,8 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
         menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Full)",
                 actionPerformed=self.copyRequestFullResponseFull))
-        menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Full)",
-                actionPerformed=self.copyRequestFullResponseFull))
+        menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Header)",
+                actionPerformed=self.copyRequestFullResponseHeader))
         menuList.add(JMenuItem("Copy HTTP Request & Response (Full/Header + Selected Data)",
                 actionPerformed=self.copyRequestFullResponseHeaderData))
 
@@ -39,7 +42,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpTraffic = self.context.getSelectedMessages()[0]
         httpRequest = httpTraffic.getRequest()
         httpResponse = httpTraffic.getResponse()
+
         data = httpRequest + httpResponse
+
         self.copyToClipboard(data)
 
     def copyRequestFullResponseHeader(self, event):
@@ -47,8 +52,10 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpRequest = httpTraffic.getRequest()
         httpResponse = httpTraffic.getResponse()
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
+
         data = httpRequest + httpResponse[0:httpResponseBodyOffset]
         data.extend(self.CUT_TEXT)
+
         self.copyToClipboard(data)
 
     def copyRequestFullResponseHeaderData(self, event):
@@ -58,6 +65,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
         selectionBounds = self.context.getSelectionBounds()
         httpResponseData = httpResponse[selectionBounds[0]:selectionBounds[1]]
+
         data = httpRequest + httpResponse[0:httpResponseBodyOffset]
         data.extend(self.CUT_TEXT)
         data.append(13) # Line Break
@@ -72,19 +80,13 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
     def copyToClipboard(self, data, sleep=False):
         if sleep is True:
-            time.sleep(2)
+            time.sleep(1.5)
 
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
 
-        temp = tempfile.TemporaryFile()
-        temp.write(data)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "primary"], stdin=temp)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "secondary"], stdin=temp)
-        temp.seek(0)
-        subprocess.Popen(["xclip", "-in", "-selection", "clipboard"], stdin=temp)
-        temp.close()
-
-        os.system("notify-send 'Copied to clipboard!'")
+        systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
+        systemSelection = Toolkit.getDefaultToolkit().getSystemSelection()
+        transferText = StringSelection(data)
+        systemClipboard.setContents(transferText, None)
+        systemSelection.setContents(transferText, None)
