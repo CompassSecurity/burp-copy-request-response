@@ -63,10 +63,11 @@ The following demo shows the 3 different copy methods:
 
 ## Installation
 
+The extension is available in the BApp Store:
+https://portswigger.net/bappstore/0d05f52c00a64cb2b2bea68744f6316c
+
 See the PortSwigger documentation on how to install Python extensions:
 https://portswigger.net/support/how-to-install-an-extension-in-burp-suite.
-
-The extension will hopefully soon also be available in the Burp BApp Store.
 
 ## Known Issue
 
