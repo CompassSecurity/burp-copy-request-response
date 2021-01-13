@@ -46,7 +46,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpRequest = httpTraffic.getRequest()
         httpResponse = httpTraffic.getResponse()
 
-        data = httpRequest + httpResponse
+        data = httpRequest
+        data.append(13) # Line Break
+        data.extend(httpResponse)
 
         self.copyToClipboard(data)
 
@@ -56,7 +58,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponse = httpTraffic.getResponse()
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
 
-        data = httpRequest + httpResponse[0:httpResponseBodyOffset]
+        data = httpRequest
+        data.append(13)
+        data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
 
         self.copyToClipboard(data)
@@ -69,9 +73,11 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         selectionBounds = self.context.getSelectionBounds()
         httpResponseData = httpResponse[selectionBounds[0]:selectionBounds[1]]
 
-        data = httpRequest + httpResponse[0:httpResponseBodyOffset]
-        data.append(13) # Line Break
+        data = httpRequest
+        data.append(13)
+        data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
+        data.append(13)
         data.extend(httpResponseData)
         data.append(13)
         data.extend(self.str_to_array(self.CUT_TEXT))
