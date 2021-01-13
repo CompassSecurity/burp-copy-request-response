@@ -12,7 +12,10 @@ import time
 
 class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
-    CUT_TEXT = [ord(c) for c in "[...]"]
+    CUT_TEXT = "[...]"
+
+    def str_to_array(self, string):
+        return [ord(c) for c in string]
 
     def registerExtenderCallbacks(self, callbacks):
         callbacks.setExtensionName("Copy HTTP Request & Response")
@@ -43,7 +46,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpRequest = httpTraffic.getRequest()
         httpResponse = httpTraffic.getResponse()
 
-        data = httpRequest + httpResponse
+        data = httpRequest
+        data.append(13) # Line Break
+        data.extend(httpResponse)
 
         self.copyToClipboard(data)
 
@@ -53,8 +58,10 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponse = httpTraffic.getResponse()
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
 
-        data = httpRequest + httpResponse[0:httpResponseBodyOffset]
-        data.extend(self.CUT_TEXT)
+        data = httpRequest
+        data.append(13)
+        data.extend(httpResponse[0:httpResponseBodyOffset])
+        data.extend(self.str_to_array(self.CUT_TEXT))
 
         self.copyToClipboard(data)
 
@@ -66,12 +73,14 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         selectionBounds = self.context.getSelectionBounds()
         httpResponseData = httpResponse[selectionBounds[0]:selectionBounds[1]]
 
-        data = httpRequest + httpResponse[0:httpResponseBodyOffset]
-        data.extend(self.CUT_TEXT)
-        data.append(13) # Line Break
+        data = httpRequest
+        data.append(13)
+        data.extend(httpResponse[0:httpResponseBodyOffset])
+        data.extend(self.str_to_array(self.CUT_TEXT))
+        data.append(13)
         data.extend(httpResponseData)
         data.append(13)
-        data.extend(self.CUT_TEXT)
+        data.extend(self.str_to_array(self.CUT_TEXT))
 
         # Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
         # has to be run in a separate thread which sleeps for 2 seconds.
