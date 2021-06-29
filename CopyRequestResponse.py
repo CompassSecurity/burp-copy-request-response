@@ -83,7 +83,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         data.extend(self.str_to_array(self.CUT_TEXT))
 
         # Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
-        # has to be run in a separate thread which sleeps for 2 seconds.
+        # has to be run in a separate thread which sleeps for 1.5 seconds.
         t = threading.Thread(target=self.copyToClipboard, args=(data,True))
         t.start()
 
