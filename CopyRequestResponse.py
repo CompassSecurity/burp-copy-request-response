@@ -99,3 +99,8 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         transferText = StringSelection(data)
         systemClipboard.setContents(transferText, None)
         systemSelection.setContents(transferText, None)
+
+    def stripTrailingNewlines(self, data):
+        while data[-1] in (10, 13):
+            data = data[:-1]
+        return data
