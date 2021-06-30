@@ -46,9 +46,10 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpRequest = httpTraffic.getRequest()
         httpResponse = httpTraffic.getResponse()
 
-        data = httpRequest
+        data = self.stripTrailingNewlines(httpRequest)
         data.append(13) # Line Break
-        data.extend(httpResponse)
+        data.append(13)
+        data.extend(self.stripTrailingNewlines(httpResponse))
 
         self.copyToClipboard(data)
 
@@ -58,7 +59,8 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponse = httpTraffic.getResponse()
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
 
-        data = httpRequest
+        data = self.stripTrailingNewlines(httpRequest)
+        data.append(13)
         data.append(13)
         data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
@@ -73,17 +75,18 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         selectionBounds = self.context.getSelectionBounds()
         httpResponseData = httpResponse[selectionBounds[0]:selectionBounds[1]]
 
-        data = httpRequest
+        data = self.stripTrailingNewlines(httpRequest)
+        data.append(13)
         data.append(13)
         data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
         data.append(13)
-        data.extend(httpResponseData)
+        data.extend(self.stripTrailingNewlines(httpResponseData))
         data.append(13)
         data.extend(self.str_to_array(self.CUT_TEXT))
 
         # Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
-        # has to be run in a separate thread which sleeps for 2 seconds.
+        # has to be run in a separate thread which sleeps for 1.5 seconds.
         t = threading.Thread(target=self.copyToClipboard, args=(data,True))
         t.start()
 
@@ -99,3 +102,8 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         transferText = StringSelection(data)
         systemClipboard.setContents(transferText, None)
         systemSelection.setContents(transferText, None)
+
+    def stripTrailingNewlines(self, data):
+        while data[-1] in (10, 13):
+            data = data[:-1]
+        return data
