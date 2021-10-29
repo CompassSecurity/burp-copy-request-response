@@ -5,8 +5,6 @@ from javax.swing import JMenuItem
 from java.awt import Toolkit
 from java.awt.datatransfer import StringSelection
 from javax.swing import JOptionPane
-import subprocess
-import tempfile
 import threading
 import time
 
