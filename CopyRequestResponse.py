@@ -10,6 +10,9 @@ import time
 
 class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
+    def __init__(self):
+        self.clipboard_lock = threading.Lock()
+
     CUT_TEXT = "[...]"
 
     def str_to_array(self, string):
@@ -95,11 +98,12 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
 
-        systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
-        systemSelection = Toolkit.getDefaultToolkit().getSystemSelection()
-        transferText = StringSelection(data)
-        systemClipboard.setContents(transferText, None)
-        systemSelection.setContents(transferText, None)
+        with self.clipboard_lock:
+            systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
+            systemSelection = Toolkit.getDefaultToolkit().getSystemSelection()
+            transferText = StringSelection(data)
+            systemClipboard.setContents(transferText, None)
+            systemSelection.setContents(transferText, None)
 
     def stripTrailingNewlines(self, data):
         while data[-1] in (10, 13):
