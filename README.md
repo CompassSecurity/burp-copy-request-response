@@ -82,4 +82,4 @@ I know, this is an ugly hack. Better ideas / fixes / PRs are welcome!
 
 ## Author
 
-- Emanuel Duss (GitHub: [mindfuckup](https://github.com/mindfuckup), Twitter: [mindfuckup](https://twitter.com/mindfuckup))
+- Emanuel Duss (GitHub: [emanuelduss](https://github.com/emanuelduss), Twitter: [emanuelduss](https://twitter.com/emanuelduss))
