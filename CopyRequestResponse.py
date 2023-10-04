@@ -98,6 +98,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
 
+        # UTF-8 encode to support special characters
+        data = data.decode("utf-8")
+
         with self.clipboard_lock:
             systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
             systemSelection = Toolkit.getDefaultToolkit().getSystemSelection()
