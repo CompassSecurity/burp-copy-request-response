@@ -10,4 +10,4 @@ Author: Emanuel Duss / Compass Security
 ShortDescription: Copy methods in the context menu of selected messages and requests/responses.
 EntryPoint: CopyRequestResponse.py
 BuildCommand: 
-SupportedProducts: Pro, Community 
+SupportedProducts: Pro, Community
