@@ -48,8 +48,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponse = httpTraffic.getResponse()
 
         data = self.stripTrailingNewlines(httpRequest)
-        data.append(13) # Line Break
-        data.append(13)
+        data.extend(self.str_to_array('\n\n'))
         data.extend(self.stripTrailingNewlines(httpResponse))
 
         self.copyToClipboard(data)
@@ -61,8 +60,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponseBodyOffset = self.helpers.analyzeResponse(httpResponse).getBodyOffset()
 
         data = self.stripTrailingNewlines(httpRequest)
-        data.append(13)
-        data.append(13)
+        data.extend(self.str_to_array('\n\n'))
         data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
 
@@ -77,13 +75,12 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
         httpResponseData = httpResponse[selectionBounds[0]:selectionBounds[1]]
 
         data = self.stripTrailingNewlines(httpRequest)
-        data.append(13)
-        data.append(13)
+        data.extend(self.str_to_array('\n\n'))
         data.extend(httpResponse[0:httpResponseBodyOffset])
         data.extend(self.str_to_array(self.CUT_TEXT))
-        data.append(13)
+        data.extend(self.str_to_array('\n'))
         data.extend(self.stripTrailingNewlines(httpResponseData))
-        data.append(13)
+        data.extend(self.str_to_array('\n'))
         data.extend(self.str_to_array(self.CUT_TEXT))
 
         # Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
@@ -97,6 +94,9 @@ class BurpExtender(IBurpExtender, IContextMenuFactory, IHttpRequestResponse):
 
         # Fix line endings of the headers
         data = self.helpers.bytesToString(data).replace('\r\n', '\n')
+
+        # UTF-8 encode to support special characters
+        data = data.decode("utf-8")
 
         with self.clipboard_lock:
             systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard()

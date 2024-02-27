@@ -2,12 +2,12 @@ Uuid: 0d05f52c00a64cb2b2bea68744f6316c
 ExtensionType: 2
 Name: Copy Request Response
 RepoName: copy-request-response
-ScreenVersion: 1.4
-SerialVersion: 11
+ScreenVersion: 1.6
+SerialVersion: 12
 MinPlatformVersion: 0
 ProOnly: False
 Author: Emanuel Duss / Compass Security
 ShortDescription: Copy methods in the context menu of selected messages and requests/responses.
 EntryPoint: CopyRequestResponse.py
 BuildCommand: 
-SupportedProducts: Pro, Community 
+SupportedProducts: Pro, Community
