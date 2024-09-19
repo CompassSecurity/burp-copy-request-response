@@ -57,29 +57,31 @@ The following demo shows the 3 different copy methods:
 
 ![Demo](demo.gif)
 
-## Requirements
 
-- Python environment / Jython for Burp Suite
+## Build
 
-## Installation
+To build the extension run
 
-The extension is available in the BApp Store:
-https://portswigger.net/bappstore/0d05f52c00a64cb2b2bea68744f6316c
+```shell
+./gradlew jar
+```
 
-See the PortSwigger documentation on how to install Python extensions:
-https://portswigger.net/support/how-to-install-an-extension-in-burp-suite.
+## Configuration
 
-## Known Issue
+It is possible to configure the "cut text". By default it is set to "[...]". To change this, add a similar entry to 
+your user.vmoptions where BurpSuite is installed
 
-If you are testing in a virtual machine, the clipboard can be messed up when
-text is still selected after choosing a context menu entry. Therefore, when the
-copy method of selected response data is choosen, the copying process is
-started in a separate thread and copies the content after 1.5 seconds to the
-clipboard. So you have to wait 1.5 seconds before switching to your reporting
-tool.
+```properties
+-DcopyRequestResponse.cutText.text=[CUT BY COMPASS]
+```
 
-I know, this is an ugly hack. Better ideas / fixes / PRs are welcome!
+If you want to use non-breaking spaces (\\u00a0), the following property will replace all spaces to non-breaking spaces:
+
+```properties
+-DcopyRequestResponse.cutText.useNbsp=true
+```
 
 ## Author
 
 - Emanuel Duss (GitHub: [emanuelduss](https://github.com/emanuelduss), Twitter: [emanuelduss](https://twitter.com/emanuelduss))
+- Tobias Hort-Giess (GitHub: [t-hg](https://github.com/t-hg))

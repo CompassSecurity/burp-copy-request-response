@@ -16,7 +16,24 @@ import java.util.function.Supplier;
 
 public class CopyRequestResponseContextMenuItemsProvider implements ContextMenuItemsProvider {
 
-    private static final String CUT_TEXT = Optional.ofNullable(System.getProperty("copyRequestResponseCutText")).orElse("[...]");
+    private static final String CUT_TEXT;
+
+    static {
+        var cutText =
+                Optional.ofNullable(System.getProperty("copyRequestResponse.cutText.text"))
+                        .orElse("[...]");
+
+        var useNbsp =
+                Boolean.valueOf(
+                        Optional.ofNullable(System.getProperty("copyRequestResponse.cutText.useNbsp"))
+                                .orElse("false"));
+
+        if (useNbsp) {
+            cutText = cutText.replaceAll(" ", "\u00a0");
+        }
+
+        CUT_TEXT = cutText;
+    }
 
     private final MontoyaApi api;
 
