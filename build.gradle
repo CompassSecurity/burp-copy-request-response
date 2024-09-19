@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group 'ch.csnc.burp'
+version '2.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+compileJava   {
+  sourceCompatibility = '21'
+  targetCompatibility = '21'
+}
+
+dependencies {
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2024.7'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    new File(projectDir, "src/main/resources/version.txt").text = """
+		Version         : ${version}
+		Build-By        : Gradle ${gradle.gradleVersion}
+		Build-Timestamp : ${java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now())}
+		Build-Revision  : ${"git rev-parse HEAD".execute().text.trim()}
+		Build-Jdk       : ${System.properties["java.version"]}
+		""".stripIndent().strip()
+}

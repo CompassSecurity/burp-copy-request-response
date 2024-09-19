@@ -2,12 +2,12 @@ Uuid: 0d05f52c00a64cb2b2bea68744f6316c
 ExtensionType: 2
 Name: Copy Request Response
 RepoName: copy-request-response
-ScreenVersion: 1.6
-SerialVersion: 12
+ScreenVersion: 2.0.0
+SerialVersion: 13
 MinPlatformVersion: 0
 ProOnly: False
-Author: Emanuel Duss / Compass Security
+Author: Emanuel Duss / Tobias Hort-Giess / Compass Security
 ShortDescription: Copy methods in the context menu of selected messages and requests/responses.
-EntryPoint: CopyRequestResponse.py
-BuildCommand: 
+EntryPoint: build/libs/burp-copy-request-response-2.0.0.jar
+BuildCommand: ./gradlew jar
 SupportedProducts: Pro, Community
