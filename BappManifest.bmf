@@ -3,11 +3,11 @@ ExtensionType: 1
 Name: Copy Request Response
 RepoName: copy-request-response
 ScreenVersion: 2.0.0
-SerialVersion: 15
+SerialVersion: 17
 MinPlatformVersion: 16
 ProOnly: False
 Author: Emanuel Duss / Tobias Hort-Giess / Compass Security
 ShortDescription: Copy methods in the context menu of selected messages and requests/responses.
-EntryPoint: build/libs/burp-copy-request-response-2.0.0.jar
+EntryPoint: build/libs/copy-request-response-2.0.0.jar
 BuildCommand: ./gradlew jar
 SupportedProducts: Pro, Community
