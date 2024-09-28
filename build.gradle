@@ -25,6 +25,7 @@ jar {
             it.isDirectory() ? it : zipTree(it)
         }
     }
+    mkdir "src/main/resources"
     new File(projectDir, "src/main/resources/version.txt").text = """
 		Version         : ${version}
 		Build-By        : Gradle ${gradle.gradleVersion}
