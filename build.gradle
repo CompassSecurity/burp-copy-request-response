@@ -16,6 +16,7 @@ compileJava   {
 
 dependencies {
     compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.3'
+    implementation 'com.miglayout:miglayout-swing:11.4.2'
 }
 
 jar {
