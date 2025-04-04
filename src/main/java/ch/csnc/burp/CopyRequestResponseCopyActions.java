@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 
 public class CopyRequestResponseCopyActions {
 
-
-
     public static void copyFullFull(MessageEditorHttpRequestResponse editor) {
         var requestResponse = editor.requestResponse();
 
