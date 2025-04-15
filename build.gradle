@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'ch.csnc.burp'
-version '2.0.0'
+version '2.1.0'
 
 repositories {
     mavenCentral()
@@ -15,7 +15,8 @@ compileJava   {
 }
 
 dependencies {
-    compileOnly 'net.portswigger.burp.extensions:montoya-api:2024.7'
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.3'
+    implementation 'com.miglayout:miglayout-swing:11.4.2'
 }
 
 jar {
