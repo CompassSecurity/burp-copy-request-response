@@ -12,26 +12,25 @@ public class CopyRequestResponseContextMenuItemsProvider implements ContextMenuI
 
     @Override
     public List<Component> provideMenuItems(ContextMenuEvent event) {
-        var editor = event.messageEditorRequestResponse().orElse(null);
-
-        if (editor == null) {
-            // context menu not opened in editor
-            return null;
-        }
+        var requestResponses =
+                event.messageEditorRequestResponse()
+                        .map(MessageEditorHttpRequestResponse::requestResponse)
+                        .map(List::of)
+                        .orElseGet(event::selectedRequestResponses);
 
         var menuItems = new ArrayList<Component>();
 
         var copyFullFull = new JMenuItem("Copy HTTP Request & Response (Full/Full)");
-        copyFullFull.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullFull(editor));
+        copyFullFull.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullFull(requestResponses));
         menuItems.add(copyFullFull);
 
         var copyFullHeader = new JMenuItem("Copy HTTP Request & Response (Full/Header)");
-        copyFullHeader.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullHeader(editor));
+        copyFullHeader.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullHeader(requestResponses));
         menuItems.add(copyFullHeader);
 
-        if (editor.selectionContext() == MessageEditorHttpRequestResponse.SelectionContext.RESPONSE) {
+        if (event.messageEditorRequestResponse().map(MessageEditorHttpRequestResponse::selectionContext).orElse(null) == MessageEditorHttpRequestResponse.SelectionContext.RESPONSE) {
             var copyFullHeaderPlusSelectedData = new JMenuItem("Copy HTTP Request & Response (Full/Header + Selected Data)");
-            copyFullHeaderPlusSelectedData.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullHeaderPlusSelectedData(editor));
+            copyFullHeaderPlusSelectedData.addActionListener(actionEvent -> CopyRequestResponseCopyActions.copyFullHeaderPlusSelectedData(event.messageEditorRequestResponse().orElseThrow()));
             menuItems.add(copyFullHeaderPlusSelectedData);
         }
 

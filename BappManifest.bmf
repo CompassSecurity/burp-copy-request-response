@@ -2,12 +2,12 @@ Uuid: 0d05f52c00a64cb2b2bea68744f6316c
 ExtensionType: 1
 Name: Copy Request Response
 RepoName: copy-request-response
-ScreenVersion: 2.1.0
-SerialVersion: 19
+ScreenVersion: 2.2.0
+SerialVersion: 20
 MinPlatformVersion: 20
 ProOnly: False
-Author: Emanuel Duss / Tobias Hort-Giess / Compass Security
+Author: Tobias Hort-Giess / Emanuel Duss / Compass Security
 ShortDescription: Copy methods in the context menu of selected messages and requests/responses.
-EntryPoint: build/libs/copy-request-response-2.1.0.jar
+EntryPoint: build/libs/copy-request-response-2.2.0.jar
 BuildCommand: ./gradlew jar
 SupportedProducts: Pro, Community
