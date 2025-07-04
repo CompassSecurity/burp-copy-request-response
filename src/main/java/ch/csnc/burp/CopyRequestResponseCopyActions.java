@@ -1,40 +1,56 @@
 package ch.csnc.burp;
 
+import burp.api.montoya.http.handler.TimingData;
+import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.ui.contextmenu.MessageEditorHttpRequestResponse;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class CopyRequestResponseCopyActions {
 
-    public static void copyFullFull(MessageEditorHttpRequestResponse editor) {
-        var requestResponse = editor.requestResponse();
-
-        var text = "%s\n\n%s".formatted(
-                requestResponse.request().toString().strip(),
-                Optional.ofNullable(requestResponse.response())
-                        .map(HttpResponse::toString)
-                        .map(String::strip)
-                        .orElse(""));
+    public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
+        var text =
+                requestResponses
+                        .stream()
+                        .map(requestResponse ->
+                                "%s\n\n%s".formatted(
+                                        requestResponse.request().toString().strip(),
+                                        Optional.ofNullable(requestResponse.response())
+                                                .map(HttpResponse::toString)
+                                                .map(String::strip)
+                                                .orElse("")))
+                        .collect(Collectors.joining("\n\n"));
 
         toClipboard(text);
     }
 
-    public static void copyFullHeader(MessageEditorHttpRequestResponse editor) {
-        var requestResponse = editor.requestResponse();
-        var requestString = requestResponse.request().toString().strip();
+    public static void copyFullHeader(List<HttpRequestResponse> requestResponses) {
+        var text =
+                requestResponses
+                        .stream()
+                        .map(requestResponse -> {
+                            var requestString = requestResponse.request().toString().strip();
 
-        var responseString = "";
-        if (requestResponse.hasResponse()) {
-            var response = requestResponse.response();
-            responseString = response.toString().substring(0, response.bodyOffset()).strip();
-            responseString += "\n\n";
-            responseString += CopyRequestResponseConfiguration.cutText();
-        }
+                            var responseString = "";
+                            if (requestResponse.hasResponse()) {
+                                var response = requestResponse.response();
+                                responseString = response.toString().substring(0, response.bodyOffset()).strip();
+                                responseString += "\n\n";
+                                responseString += CopyRequestResponseConfiguration.cutText();
+                            }
 
-        var text = "%s\n\n%s".formatted(requestString, responseString);
+                            return "%s\n\n%s".formatted(requestString, responseString);
+                        })
+                        .collect(Collectors.joining("\n\n"));
+
         toClipboard(text);
     }
 
