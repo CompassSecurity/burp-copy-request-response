@@ -6,6 +6,7 @@ public class CopyRequestResponseConfiguration {
     private static final String CUT_TEXT_NBSP_KEY = "CopyRequestResponseCutTextNbsp";
     private static final String COPY_FULL_FULL_OR_SELECTION_KEY = "CopyRequestResponseCopyFullFullOrSelectionHotKey";
     private static final String COPY_FULL_HEADER_KEY = "CopyRequestResponseCopyFullHeaderHotKey";
+    private static final String ENABLE_JSON_FORMATTING_KEY = "CopyRequestResponseEnableJSONFormatting";
 
     public static String cutText() {
         var cutText = CopyRequestResponseExtension.api().persistence().preferences().getString(CUT_TEXT_KEY);
@@ -62,6 +63,19 @@ public class CopyRequestResponseConfiguration {
         CopyRequestResponseExtension.api().persistence().preferences().setString(COPY_FULL_HEADER_KEY, hotKey);
     }
 
+    public static boolean enableJsonFormatting() {
+        var enableJson = CopyRequestResponseExtension.api().persistence().preferences().getBoolean(ENABLE_JSON_FORMATTING_KEY);
+        if (enableJson == null) {
+            enableJson = false;
+        }
+        setEnableJsonFormatting(enableJson);
+        return enableJson;
+    }
+
+    public static void setEnableJsonFormatting(boolean enabled) {
+        CopyRequestResponseExtension.api().persistence().preferences().setBoolean(ENABLE_JSON_FORMATTING_KEY, enabled);
+    }
+    
     private CopyRequestResponseConfiguration() {
         // static class
     }

@@ -51,6 +51,10 @@ public class CopyRequestResponseConfigurationDialog {
         useNbspCheckbox.setSelected(CopyRequestResponseConfiguration.useNonBreakableSpace());
         useNbspCheckbox.addActionListener(event -> CopyRequestResponseConfiguration.setUseNonBreakableSpace(useNbspCheckbox.isSelected()));
 
+        var enableJsonFormattingCheckbox = new JCheckBox("Enable pretty-printing of JSON data");
+        enableJsonFormattingCheckbox.setSelected(CopyRequestResponseConfiguration.enableJsonFormatting());
+        enableJsonFormattingCheckbox.addActionListener(event -> CopyRequestResponseConfiguration.setEnableJsonFormatting(enableJsonFormattingCheckbox.isSelected()));
+
         var panel = new JPanel();
         panel.setLayout(new MigLayout());
         panel.add(cutTextLabel);
@@ -60,6 +64,7 @@ public class CopyRequestResponseConfigurationDialog {
         panel.add(copyFullFullOrSelectionHotKeyTextField, "grow, wrap");
         panel.add(copyFullHeaderLabel);
         panel.add(copyFullHeaderTextField, "grow, wrap");
+        panel.add(enableJsonFormattingCheckbox, "grow, wrap");
 
         this.dialog = new JDialog(CopyRequestResponseExtension.api().userInterface().swingUtils().suiteFrame(), true);
         this.dialog.setLocationRelativeTo(CopyRequestResponseExtension.api().userInterface().swingUtils().suiteFrame());
