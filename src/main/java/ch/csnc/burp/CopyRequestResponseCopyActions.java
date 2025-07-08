@@ -1,9 +1,13 @@
 package ch.csnc.burp;
 
 import burp.api.montoya.http.handler.TimingData;
+import burp.api.montoya.http.message.HttpMessage;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.ui.contextmenu.MessageEditorHttpRequestResponse;
+import burp.api.montoya.utilities.json.JsonNode;
+import burp.api.montoya.utilities.json.JsonParseException;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.time.LocalDateTime;
@@ -16,15 +20,36 @@ import java.util.stream.Collectors;
 
 public class CopyRequestResponseCopyActions {
 
+    public static String httpMessageBodyToJson(HttpMessage httpMessage) {
+        if (!CopyRequestResponseConfiguration.enableJsonFormatting()) {
+            return httpMessage.toString().strip();
+        }
+
+        String messageHeaders = httpMessage.toString().substring(0, httpMessage.bodyOffset()).strip();
+        String messageBody = httpMessage.bodyToString();
+
+        try {
+            JsonNode jsonNode = JsonNode.jsonNode(messageBody);
+            messageBody = jsonNode.toJsonString();
+        } catch (JsonParseException | IllegalArgumentException e) {
+            // ignore if JSON cannot be parsed or the input is empty
+        }
+
+        return "%s\n\n%s".formatted(
+                messageHeaders,
+                messageBody
+        ).strip();
+    }
+
     public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
         var text =
                 requestResponses
                         .stream()
                         .map(requestResponse ->
                                 "%s\n\n%s".formatted(
-                                        requestResponse.request().toString().strip(),
+                                        httpMessageBodyToJson(requestResponse.request()),
                                         Optional.ofNullable(requestResponse.response())
-                                                .map(HttpResponse::toString)
+                                                .map(CopyRequestResponseCopyActions::httpMessageBodyToJson)
                                                 .map(String::strip)
                                                 .orElse("")))
                         .collect(Collectors.joining("\n\n"));
@@ -37,7 +62,7 @@ public class CopyRequestResponseCopyActions {
                 requestResponses
                         .stream()
                         .map(requestResponse -> {
-                            var requestString = requestResponse.request().toString().strip();
+                            var requestString = httpMessageBodyToJson(requestResponse.request());
 
                             var responseString = "";
                             if (requestResponse.hasResponse()) {
@@ -56,7 +81,7 @@ public class CopyRequestResponseCopyActions {
 
     public static void copyFullHeaderPlusSelectedData(MessageEditorHttpRequestResponse editor) {
         var requestResponse = editor.requestResponse();
-        var requestString = requestResponse.request().toString().strip();
+        var requestString = httpMessageBodyToJson(requestResponse.request());
 
         Supplier<String> responseStringSupplier = () -> {
             if (!requestResponse.hasResponse()) {
