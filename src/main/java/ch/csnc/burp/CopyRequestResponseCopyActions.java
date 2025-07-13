@@ -114,7 +114,9 @@ public class CopyRequestResponseCopyActions {
         };
 
         var text = "%s\n\n%s".formatted(requestString, responseStringSupplier.get());
-
+        
+        // Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
+        // has to be run in a separate thread which sleeps for 0.2 seconds.
         var thread = new Thread(() -> {
             try {
                 Thread.sleep(200);
@@ -138,6 +140,7 @@ public class CopyRequestResponseCopyActions {
     }
 
     private CopyRequestResponseCopyActions() {
+        // static class
     }
 
 }
