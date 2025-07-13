@@ -21,7 +21,7 @@ public class CopyRequestResponseCopyActions {
                 requestResponses
                         .stream()
                         .map(requestResponse ->
-                                "%s\n\n%s".formatted(
+                                "Request\n-----------------\n%s\n\nResponse\n-----------------\n%s".formatted(
                                         requestResponse.request().toString().strip(),
                                         Optional.ofNullable(requestResponse.response())
                                                 .map(HttpResponse::toString)
@@ -37,12 +37,12 @@ public class CopyRequestResponseCopyActions {
                 requestResponses
                         .stream()
                         .map(requestResponse -> {
-                            var requestString = requestResponse.request().toString().strip();
+                            var requestString = "Request\n-----------------\n" + requestResponse.request().toString().strip();
 
                             var responseString = "";
                             if (requestResponse.hasResponse()) {
                                 var response = requestResponse.response();
-                                responseString = response.toString().substring(0, response.bodyOffset()).strip();
+                                responseString = "Response\n-----------------\n" + response.toString().substring(0, response.bodyOffset()).strip();
                                 responseString += "\n\n";
                                 responseString += CopyRequestResponseConfiguration.cutText();
                             }
@@ -56,7 +56,7 @@ public class CopyRequestResponseCopyActions {
 
     public static void copyFullHeaderPlusSelectedData(MessageEditorHttpRequestResponse editor) {
         var requestResponse = editor.requestResponse();
-        var requestString = requestResponse.request().toString().strip();
+        var requestString = "Request\n-----------------\n" + requestResponse.request().toString().strip();
 
         Supplier<String> responseStringSupplier = () -> {
             if (!requestResponse.hasResponse()) {
@@ -64,7 +64,7 @@ public class CopyRequestResponseCopyActions {
             }
 
             var response = requestResponse.response();
-            var responseString = response.toString().substring(0, response.bodyOffset()).strip();
+            var responseString = "Response\n-----------------\n" + response.toString().substring(0, response.bodyOffset()).strip();
             responseString += "\n\n";
 
 
@@ -115,8 +115,6 @@ public class CopyRequestResponseCopyActions {
 
         var text = "%s\n\n%s".formatted(requestString, responseStringSupplier.get());
 
-        // Ugly hack because VMware is messing up the clipboard if a text is still selected, the function
-        // has to be run in a separate thread which sleeps for 0.2 seconds.
         var thread = new Thread(() -> {
             try {
                 Thread.sleep(200);
@@ -140,7 +138,6 @@ public class CopyRequestResponseCopyActions {
     }
 
     private CopyRequestResponseCopyActions() {
-        // static class
     }
 
 }
