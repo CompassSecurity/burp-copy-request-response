@@ -19,6 +19,9 @@ public class CopyRequestResponseExtension implements BurpExtension {
     public void initialize(MontoyaApi api) {
         CopyRequestResponseExtension.api = api;
         api.extension().setName("Copy Request Response");
+
+        CopyRequestResponseConfiguration.register();
+
         api.userInterface().registerContextMenuItemsProvider(new CopyRequestResponseContextMenuItemsProvider());
 
         CopyRequestResponseHotKeyHandler.register();

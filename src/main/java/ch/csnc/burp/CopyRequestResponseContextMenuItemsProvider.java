@@ -34,9 +34,6 @@ public class CopyRequestResponseContextMenuItemsProvider implements ContextMenuI
             menuItems.add(copyFullHeaderPlusSelectedData);
         }
 
-        var openConfiguration = new JMenuItem("Open Configuration");
-        openConfiguration.addActionListener(actionEvent -> new CopyRequestResponseConfigurationDialog().show());
-        menuItems.add(openConfiguration);
 
         return List.copyOf(menuItems);
     }
