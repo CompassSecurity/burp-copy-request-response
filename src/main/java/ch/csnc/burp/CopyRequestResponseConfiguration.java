@@ -1,69 +1,82 @@
 package ch.csnc.burp;
 
+import burp.api.montoya.ui.settings.SettingsPanelBuilder;
+import burp.api.montoya.ui.settings.SettingsPanelPersistence;
+import burp.api.montoya.ui.settings.SettingsPanelSetting;
+import burp.api.montoya.ui.settings.SettingsPanelWithData;
+
 public class CopyRequestResponseConfiguration {
 
-    private static final String CUT_TEXT_KEY = "CopyRequestResponseCutText";
-    private static final String CUT_TEXT_NBSP_KEY = "CopyRequestResponseCutTextNbsp";
-    private static final String COPY_FULL_FULL_OR_SELECTION_KEY = "CopyRequestResponseCopyFullFullOrSelectionHotKey";
-    private static final String COPY_FULL_HEADER_KEY = "CopyRequestResponseCopyFullHeaderHotKey";
+
+    private static final String cutTextLabel = "Cut Text";
+    private static final String cutTextDefault = "[...]";
+
+    private static final String copyFullFullOrSelectionHotKeyLabel = "HotKey for Copy Full/Full or Full/Header + Selected Data";
+    private static final String copyFullFullOrSelectionHotKeyDefault = "Ctrl+Shift+C";
+
+    private static final String copyFullHeaderLabel = "HotKey for Copy Full/Header";
+    private static final String copyFullHeaderDefault = "Ctrl+Alt+C";
+
+    private static final String useNbspCheckbox = "Use Non-Breakable Spaces";
+    private static final boolean useNbspCheckboxDefault = false;
 
     public static String cutText() {
-        var cutText = CopyRequestResponseExtension.api().persistence().preferences().getString(CUT_TEXT_KEY);
-        if (cutText == null) {
-            cutText = "[...]";
-            setCutText(cutText);
-        }
+        var cutText = panel.getString(cutTextLabel);
+        if (cutText == null)
+            cutText = cutTextDefault;
+
         if (useNonBreakableSpace()) {
             cutText = cutText.replaceAll(" ", "\u00a0");
         }
         return cutText;
     }
 
-    public static void setCutText(String cutText) {
-        CopyRequestResponseExtension.api().persistence().preferences().setString(CUT_TEXT_KEY, cutText);
-    }
 
     public static boolean useNonBreakableSpace() {
-        var useNbsp = CopyRequestResponseExtension.api().persistence().preferences().getBoolean(CUT_TEXT_NBSP_KEY);
-        if (useNbsp == null) {
-            useNbsp = false;
-        }
-        setUseNonBreakableSpace(useNbsp);
-        return useNbsp;
+        return panel.getBoolean(useNbspCheckbox);
     }
 
-    public static void setUseNonBreakableSpace(boolean enabled) {
-        CopyRequestResponseExtension.api().persistence().preferences().setBoolean(CUT_TEXT_NBSP_KEY, enabled);
-    }
 
     public static String copyFullFullOrSelectionHotKey() {
-        var hotKey = CopyRequestResponseExtension.api().persistence().preferences().getString(COPY_FULL_FULL_OR_SELECTION_KEY);
-        if (hotKey == null) {
-            hotKey = "Ctrl+Shift+C";
-            setCopyFullFullOrSelectionHotKey(hotKey);
-        }
-        return hotKey;
+        var hotkey = panel.getString(copyFullFullOrSelectionHotKeyLabel);
+        if (hotkey == null)
+            hotkey = copyFullFullOrSelectionHotKeyDefault;
+
+        return hotkey;
     }
 
-    public static void setCopyFullFullOrSelectionHotKey(String hotKey) {
-        CopyRequestResponseExtension.api().persistence().preferences().setString(COPY_FULL_FULL_OR_SELECTION_KEY, hotKey);
-    }
 
     public static String copyFullHeaderHotKey() {
-        var hotKey = CopyRequestResponseExtension.api().persistence().preferences().getString(COPY_FULL_HEADER_KEY);
-        if (hotKey == null) {
-            hotKey = "Ctrl+Alt+C";
-            setCopyFullHeaderHotKey(hotKey);
-        }
-        return hotKey;
+        var hotkey = panel.getString(copyFullHeaderLabel);
+        if (hotkey == null)
+            hotkey = copyFullHeaderDefault;
+
+        return hotkey;
     }
 
-    public static void setCopyFullHeaderHotKey(String hotKey) {
-        CopyRequestResponseExtension.api().persistence().preferences().setString(COPY_FULL_HEADER_KEY, hotKey);
-    }
 
     private CopyRequestResponseConfiguration() {
         // static class
     }
 
+    // Define setting panel entries
+    private final static SettingsPanelSetting[] settings = new SettingsPanelSetting[] {
+            SettingsPanelSetting.stringSetting(cutTextLabel, cutTextDefault),
+            SettingsPanelSetting.booleanSetting(useNbspCheckbox, useNbspCheckboxDefault),
+            SettingsPanelSetting.stringSetting(copyFullFullOrSelectionHotKeyLabel, copyFullFullOrSelectionHotKeyDefault),
+            SettingsPanelSetting.stringSetting(copyFullHeaderLabel, copyFullHeaderDefault)
+    };
+
+    // Create settings panel
+    private final static SettingsPanelWithData panel = SettingsPanelBuilder.settingsPanel()
+                                                                           .withPersistence(SettingsPanelPersistence.USER_SETTINGS)
+                                                                           .withTitle("CopyRequestResponse Configuration")
+                                                                           .withDescription("The extension's behavior can be customized here.")
+                                                                           .withKeywords("CopyRequestResponse", "Settings")
+                                                                           .withSettings(settings)
+                                                                           .build();
+
+    public static void register() {
+        CopyRequestResponseExtension.api().userInterface().registerSettingsPanel(panel);
+    }
 }
