@@ -22,8 +22,6 @@ public class CopyRequestResponseConfiguration {
 
     public static String cutText() {
         var cutText = panel.getString(cutTextLabel);
-        if (cutText == null)
-            cutText = cutTextDefault;
 
         if (useNonBreakableSpace()) {
             cutText = cutText.replaceAll(" ", "\u00a0");
