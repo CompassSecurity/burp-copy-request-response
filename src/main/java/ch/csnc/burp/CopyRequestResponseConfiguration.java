@@ -38,20 +38,12 @@ public class CopyRequestResponseConfiguration {
 
 
     public static String copyFullFullOrSelectionHotKey() {
-        var hotkey = panel.getString(copyFullFullOrSelectionHotKeyLabel);
-        if (hotkey == null)
-            hotkey = copyFullFullOrSelectionHotKeyDefault;
-
-        return hotkey;
+        return panel.getString(copyFullFullOrSelectionHotKeyLabel);
     }
 
 
     public static String copyFullHeaderHotKey() {
-        var hotkey = panel.getString(copyFullHeaderLabel);
-        if (hotkey == null)
-            hotkey = copyFullHeaderDefault;
-
-        return hotkey;
+        return panel.getString(copyFullHeaderLabel);
     }
 
 
@@ -72,7 +64,7 @@ public class CopyRequestResponseConfiguration {
                                                                            .withPersistence(SettingsPanelPersistence.USER_SETTINGS)
                                                                            .withTitle("CopyRequestResponse Configuration")
                                                                            .withDescription("The extension's behavior can be customized here.")
-                                                                           .withKeywords("CopyRequestResponse", "Settings")
+                                                                           .withKeywords("CopyRequestResponse", "Settings", "CutText")
                                                                            .withSettings(settings)
                                                                            .build();
 
