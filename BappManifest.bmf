@@ -2,12 +2,12 @@ Uuid: 0d05f52c00a64cb2b2bea68744f6316c
 ExtensionType: 1
 Name: Copy Request Response
 RepoName: copy-request-response
-ScreenVersion: 2.3.0
-SerialVersion: 27
+ScreenVersion: 2.4.0
+SerialVersion: 28
 MinPlatformVersion: 20
 ProOnly: False
 Author: Tobias Hort-Giess / Emanuel Duss / Compass Security
 ShortDescription: Enables quick copying of HTTP requests and responses.
-EntryPoint: build/libs/copy-request-response-2.3.0.jar
+EntryPoint: build/libs/copy-request-response-2.4.0.jar
 BuildCommand: ./gradlew jar
 SupportedProducts: Pro, Community
