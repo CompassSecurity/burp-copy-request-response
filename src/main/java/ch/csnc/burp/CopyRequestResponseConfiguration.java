@@ -33,7 +33,7 @@ public class CopyRequestResponseConfiguration {
       SettingsPanelSetting.stringSetting(COPY_FULL_HEADER_LABEL, COPY_FULL_HEADER_DEFAULT),
       SettingsPanelSetting.stringSetting(TEMPLATE_LABEL, TEMPLATE_DEFAULT),
       SettingsPanelSetting.stringSetting(
-          "Comma seperated list of header name regular expressions to be hidden when copying, e.g. 'sec-.*,accept.*'",
+          "Comma-separated, case-insensitive regexes to match header names, e.g., \"sec-.*,accept.*\"",
           HIDE_REQUEST_HEADERS_LABEL, HIDE_REQUEST_HEADERS_DEFAULT),
       SettingsPanelSetting.stringSetting(HIDE_RESPONSE_HEADERS_LABEL, HIDE_RESPONSE_HEADERS_DEFAULT),
   };
