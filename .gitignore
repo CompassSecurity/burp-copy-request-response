@@ -3,5 +3,7 @@
 .gradle
 .idea
 .project
+.settings
+bin
 build
 src/main/resources/version.txt
