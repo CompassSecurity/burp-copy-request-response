@@ -1,5 +1,8 @@
 package ch.csnc.burp;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 import burp.api.montoya.ui.settings.SettingsPanelBuilder;
 import burp.api.montoya.ui.settings.SettingsPanelPersistence;
 import burp.api.montoya.ui.settings.SettingsPanelSetting;
@@ -17,13 +20,22 @@ public class CopyRequestResponseConfiguration {
   private static final boolean USE_NBSP_DEFAULT = false;
   private static final String TEMPLATE_LABEL = "Template";
   private static final String TEMPLATE_DEFAULT = "%s%n%n%s";
+  private static final String HIDE_REQUEST_HEADERS_LABEL = "Hide Request Headers";
+  private static final String HIDE_REQUEST_HEADERS_DEFAULT = "";
+  private static final String HIDE_RESPONSE_HEADERS_LABEL = "Hide Response Headers";
+  private static final String HIDE_RESPONSE_HEADERS_DEFAULT = "";
 
   private final static SettingsPanelSetting[] settings = new SettingsPanelSetting[] {
       SettingsPanelSetting.stringSetting(CUT_TEXT_LABEL, CUT_TEXT_DEFAULT),
       SettingsPanelSetting.booleanSetting(USE_NBSP_LABEL, USE_NBSP_DEFAULT),
-      SettingsPanelSetting.stringSetting(COPY_FULL_FULL_OR_SELECTION_HOT_KEY_LABEL, COPY_FULL_FULL_OR_SELECTION_HOT_KEY_DEFAULT),
+      SettingsPanelSetting.stringSetting(COPY_FULL_FULL_OR_SELECTION_HOT_KEY_LABEL,
+          COPY_FULL_FULL_OR_SELECTION_HOT_KEY_DEFAULT),
       SettingsPanelSetting.stringSetting(COPY_FULL_HEADER_LABEL, COPY_FULL_HEADER_DEFAULT),
       SettingsPanelSetting.stringSetting(TEMPLATE_LABEL, TEMPLATE_DEFAULT),
+      SettingsPanelSetting.stringSetting(
+          "Comma seperated list of header name regular expressions to be hidden when copying, e.g. 'sec-.*,accept.*'",
+          HIDE_REQUEST_HEADERS_LABEL, HIDE_REQUEST_HEADERS_DEFAULT),
+      SettingsPanelSetting.stringSetting(HIDE_RESPONSE_HEADERS_LABEL, HIDE_RESPONSE_HEADERS_DEFAULT),
   };
 
   private final static SettingsPanelWithData panel = SettingsPanelBuilder.settingsPanel()
@@ -56,6 +68,20 @@ public class CopyRequestResponseConfiguration {
 
   public static String template() {
     return panel.getString(TEMPLATE_LABEL);
+  }
+
+  public static List<Pattern> hideRequestHeaders() {
+    return List.of(panel.getString(HIDE_REQUEST_HEADERS_LABEL).split(","))
+        .stream()
+        .map(regex -> Pattern.compile(regex, Pattern.CASE_INSENSITIVE))
+        .toList();
+  }
+
+  public static List<Pattern> hideResponseHeaders() {
+    return List.of(panel.getString(HIDE_RESPONSE_HEADERS_LABEL).split(","))
+        .stream()
+        .map(regex -> Pattern.compile(regex, Pattern.CASE_INSENSITIVE))
+        .toList();
   }
 
   public static void register() {

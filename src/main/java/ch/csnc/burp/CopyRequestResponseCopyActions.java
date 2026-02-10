@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class CopyRequestResponseCopyActions {
 
   public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
+    requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
+
     var text = requestResponses
         .stream()
         .map(requestResponse -> CopyRequestResponseConfiguration.template().formatted(
@@ -27,6 +29,8 @@ public class CopyRequestResponseCopyActions {
   }
 
   public static void copyFullHeader(List<HttpRequestResponse> requestResponses) {
+    requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
+
     var text = requestResponses
         .stream()
         .map(requestResponse -> {
@@ -48,7 +52,8 @@ public class CopyRequestResponseCopyActions {
   }
 
   public static void copyFullHeaderPlusSelectedData(MessageEditorHttpRequestResponse editor) {
-    var requestResponse = editor.requestResponse();
+    var requestResponse = hideHeaders(editor.requestResponse());
+
     var requestString = requestResponse.request().toString().strip();
 
     Supplier<String> responseStringSupplier = () -> {
@@ -121,6 +126,31 @@ public class CopyRequestResponseCopyActions {
     thread.setName("ToClipboardThread");
     thread.setDaemon(true);
     thread.start();
+  }
+
+  private static HttpRequestResponse hideHeaders(HttpRequestResponse requestResponse) {
+    var request = requestResponse.request();
+
+    for (var header : request.headers()) {
+      for (var pattern : CopyRequestResponseConfiguration.hideRequestHeaders()) {
+        if (pattern.matcher(header.name()).matches()) {
+          request = request.withRemovedHeader(header);
+        }
+      }
+    }
+
+    var response = requestResponse.response();
+    if (response != null) {
+      for (var header : response.headers()) {
+        for(var pattern : CopyRequestResponseConfiguration.hideResponseHeaders()) {
+          if (pattern.matcher(header.name()).matches()) {
+            response = response.withRemovedHeader(header);
+          }
+        }
+      }
+    }
+
+    return HttpRequestResponse.httpRequestResponse(request, response);
   }
 
   private static void toClipboard(String text0) {
