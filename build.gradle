@@ -15,7 +15,7 @@ compileJava   {
 }
 
 dependencies {
-    compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.6'
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.12'
 }
 
 jar {
