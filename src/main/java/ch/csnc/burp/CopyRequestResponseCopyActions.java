@@ -15,14 +15,15 @@ public class CopyRequestResponseCopyActions {
   public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
     requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
 
-    var text = requestResponses
-        .stream()
-        .map(requestResponse -> CopyRequestResponseConfiguration.template().formatted(
-            requestResponse.request().toString().strip(),
-            Optional.ofNullable(requestResponse.response())
-                .map(HttpResponse::toString)
-                .map(String::strip)
-                .orElse("")))
+    var text = requestResponses.stream()
+        .map(requestResponse -> {
+          var requestString = requestResponse.request().toString().strip();
+          var responseString = Optional.ofNullable(requestResponse.response())
+              .map(HttpResponse::toString)
+              .map(String::strip)
+              .orElse("");
+          return format(requestString, responseString);
+        })
         .collect(Collectors.joining("\n\n"));
 
     toClipboard(text);
@@ -35,7 +36,6 @@ public class CopyRequestResponseCopyActions {
         .stream()
         .map(requestResponse -> {
           var requestString = requestResponse.request().toString().strip();
-
           var responseString = "";
           if (requestResponse.hasResponse()) {
             var response = requestResponse.response();
@@ -43,8 +43,7 @@ public class CopyRequestResponseCopyActions {
             responseString += "\n\n";
             responseString += CopyRequestResponseConfiguration.cutText();
           }
-
-          return CopyRequestResponseConfiguration.template().formatted(requestString, responseString);
+          return format(requestString, responseString);
         })
         .collect(Collectors.joining("\n\n"));
 
@@ -110,7 +109,7 @@ public class CopyRequestResponseCopyActions {
       return responseString;
     };
 
-    var text = CopyRequestResponseConfiguration.template().formatted(requestString, responseStringSupplier.get());
+    var text = format(requestString, responseStringSupplier.get());
 
     // Ugly hack because VMware is messing up the clipboard if a text is still
     // selected, the function
@@ -142,7 +141,7 @@ public class CopyRequestResponseCopyActions {
     var response = requestResponse.response();
     if (response != null) {
       for (var header : response.headers()) {
-        for(var pattern : CopyRequestResponseConfiguration.hideResponseHeaders()) {
+        for (var pattern : CopyRequestResponseConfiguration.hideResponseHeaders()) {
           if (pattern.matcher(header.name()).matches()) {
             response = response.withRemovedHeader(header);
           }
@@ -151,6 +150,13 @@ public class CopyRequestResponseCopyActions {
     }
 
     return HttpRequestResponse.httpRequestResponse(request, response);
+  }
+
+  private static String format(String request, String response) {
+    return CopyRequestResponseConfiguration.template()
+        .replace("\\n", "\n")
+        .replace("{request}", request)
+        .replace("{response}", response);
   }
 
   private static void toClipboard(String text0) {

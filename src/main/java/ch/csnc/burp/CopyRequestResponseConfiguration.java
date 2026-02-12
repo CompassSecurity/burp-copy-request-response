@@ -19,7 +19,7 @@ public class CopyRequestResponseConfiguration {
   private static final String USE_NBSP_LABEL = "Use Non-Breakable Spaces";
   private static final boolean USE_NBSP_DEFAULT = false;
   private static final String TEMPLATE_LABEL = "Template";
-  private static final String TEMPLATE_DEFAULT = "%s%n%n%s";
+  private static final String TEMPLATE_DEFAULT = "{request}\\n\\n{response}";
   private static final String HIDE_REQUEST_HEADERS_LABEL = "Hide Request Headers";
   private static final String HIDE_REQUEST_HEADERS_DEFAULT = "";
   private static final String HIDE_RESPONSE_HEADERS_LABEL = "Hide Response Headers";
