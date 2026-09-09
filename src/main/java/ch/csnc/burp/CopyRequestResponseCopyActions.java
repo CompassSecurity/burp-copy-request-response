@@ -8,9 +8,20 @@ import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CopyRequestResponseCopyActions {
+
+  private static final int DEFAULT_INDENT_WIDTH = 4;
+  private static final int MAX_INDENT_WIDTH = 64;
+
+  /**
+   * Matches {request}, {response}, {request:indent}, {response:indent=2},
+   * {request:indent=\t} and alike.
+   */
+  private static final Pattern PLACEHOLDER = Pattern.compile("\\{(request|response)(:indent(?:=([^}]*))?)?\\}");
 
   public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
     requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
@@ -153,10 +164,83 @@ public class CopyRequestResponseCopyActions {
   }
 
   private static String format(String request, String response) {
-    return CopyRequestResponseConfiguration.template()
-        .replace("\\n", "\n")
-        .replace("{request}", request)
-        .replace("{response}", response);
+    // Control characters are expanded on the template only, never on the
+    // request/response payload itself.
+    var template = unescape(CopyRequestResponseConfiguration.template());
+
+    var matcher = PLACEHOLDER.matcher(template);
+    var text = new StringBuilder();
+    while (matcher.find()) {
+      var value = "request".equals(matcher.group(1)) ? request : response;
+      if (matcher.group(2) != null) {
+        value = indent(value, indentPrefix(matcher.group(3)));
+      }
+      // quoteReplacement, so that a payload containing $ or \ is copied verbatim
+      // and a payload containing a placeholder is not substituted again.
+      matcher.appendReplacement(text, Matcher.quoteReplacement(value));
+    }
+    matcher.appendTail(text);
+
+    return text.toString();
+  }
+
+  /**
+   * Prefixes every non-empty line with the given prefix. Empty lines are kept
+   * empty, so that no trailing whitespace is copied.
+   */
+  private static String indent(String text, String prefix) {
+    if (text.isEmpty()) {
+      return text;
+    }
+    return text.lines()
+        .map(line -> line.isEmpty() ? line : prefix + line)
+        .collect(Collectors.joining("\n"));
+  }
+
+  /**
+   * Resolves the argument of an {@code :indent} placeholder: no argument means
+   * four spaces, a number means that many spaces, anything else is taken
+   * literally (control characters such as \t are expanded).
+   */
+  private static String indentPrefix(String argument) {
+    String prefix;
+    if (argument == null || argument.isEmpty()) {
+      prefix = " ".repeat(DEFAULT_INDENT_WIDTH);
+    } else if (argument.chars().allMatch(Character::isDigit)) {
+      var width = argument.length() > 2 ? MAX_INDENT_WIDTH : Integer.parseInt(argument);
+      prefix = " ".repeat(Math.min(width, MAX_INDENT_WIDTH));
+    } else {
+      prefix = unescape(argument);
+    }
+    if (CopyRequestResponseConfiguration.useNonBreakableSpace()) {
+      prefix = prefix.replace(' ', '\u00a0');
+    }
+    return prefix;
+  }
+
+  /**
+   * Expands the control characters \n, \r, \t, \0 and the escaped backslash \\.
+   * Unknown escape sequences are kept as they are.
+   */
+  private static String unescape(String text) {
+    var unescaped = new StringBuilder(text.length());
+    for (var index = 0; index < text.length(); index++) {
+      var character = text.charAt(index);
+      if (character != '\\' || index + 1 >= text.length()) {
+        unescaped.append(character);
+        continue;
+      }
+      var escaped = text.charAt(++index);
+      switch (escaped) {
+        case 'n' -> unescaped.append('\n');
+        case 'r' -> unescaped.append('\r');
+        case 't' -> unescaped.append('\t');
+        case '0' -> unescaped.append('\0');
+        case '\\' -> unescaped.append('\\');
+        default -> unescaped.append('\\').append(escaped);
+      }
+    }
+    return unescaped.toString();
   }
 
   private static void toClipboard(String text0) {
