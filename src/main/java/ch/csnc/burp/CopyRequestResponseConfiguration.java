@@ -19,10 +19,9 @@ public class CopyRequestResponseConfiguration {
   private static final String USE_NBSP_LABEL = "Use Non-Breakable Spaces";
   private static final boolean USE_NBSP_DEFAULT = false;
   private static final String TEMPLATE_LABEL = "Template";
-  private static final String TEMPLATE_DEFAULT = "{request}\\n\\n{response}";
-  private static final String TEMPLATE_DESCRIPTION =
-      "Placeholders: {request}, {response}, {request:indent} (4 spaces), {response:indent=2} (n spaces), "
-          + "{request:indent=\\t} (literal prefix). Control characters: \\n, \\r, \\t, \\0 and \\\\.";
+  private static final String TEMPLATE_DEFAULT = "{request:indent=0}\\n\\n{response:indent=0}";
+  private static final String INDENT_WITH_TABS_LABEL = "Indent With Tabs";
+  private static final boolean INDENT_WITH_TABS_DEFAULT = false;
   private static final String HIDE_REQUEST_HEADERS_LABEL = "Hide Request Headers";
   private static final String HIDE_REQUEST_HEADERS_DEFAULT = "";
   private static final String HIDE_RESPONSE_HEADERS_LABEL = "Hide Response Headers";
@@ -34,7 +33,8 @@ public class CopyRequestResponseConfiguration {
       SettingsPanelSetting.stringSetting(COPY_FULL_FULL_OR_SELECTION_HOT_KEY_LABEL,
           COPY_FULL_FULL_OR_SELECTION_HOT_KEY_DEFAULT),
       SettingsPanelSetting.stringSetting(COPY_FULL_HEADER_LABEL, COPY_FULL_HEADER_DEFAULT),
-      SettingsPanelSetting.stringSetting(TEMPLATE_DESCRIPTION, TEMPLATE_LABEL, TEMPLATE_DEFAULT),
+      SettingsPanelSetting.stringSetting(TEMPLATE_LABEL, TEMPLATE_DEFAULT),
+      SettingsPanelSetting.booleanSetting(INDENT_WITH_TABS_LABEL, INDENT_WITH_TABS_DEFAULT),
       SettingsPanelSetting.stringSetting(
           "Comma-separated, case-insensitive regexes to match header names, e.g., \"sec-.*,accept.*\"",
           HIDE_REQUEST_HEADERS_LABEL, HIDE_REQUEST_HEADERS_DEFAULT),
@@ -71,6 +71,10 @@ public class CopyRequestResponseConfiguration {
 
   public static String template() {
     return panel.getString(TEMPLATE_LABEL);
+  }
+
+  public static boolean indentWithTabs() {
+    return panel.getBoolean(INDENT_WITH_TABS_LABEL);
   }
 
   public static List<Pattern> hideRequestHeaders() {

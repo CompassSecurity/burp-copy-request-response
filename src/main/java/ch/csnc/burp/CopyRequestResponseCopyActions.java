@@ -14,14 +14,10 @@ import java.util.stream.Collectors;
 
 public class CopyRequestResponseCopyActions {
 
-  private static final int DEFAULT_INDENT_WIDTH = 4;
   private static final int MAX_INDENT_WIDTH = 64;
 
-  /**
-   * Matches {request}, {response}, {request:indent}, {response:indent=2},
-   * {request:indent=\t} and alike.
-   */
-  private static final Pattern PLACEHOLDER = Pattern.compile("\\{(request|response)(:indent(?:=([^}]*))?)?\\}");
+  /** Matches {request}, {response}, {request:indent=0} and {response:indent=2}. */
+  private static final Pattern PLACEHOLDER = Pattern.compile("\\{(request|response)(?::indent=(\\d+))?\\}");
 
   public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
     requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
@@ -164,16 +160,15 @@ public class CopyRequestResponseCopyActions {
   }
 
   private static String format(String request, String response) {
-    // Control characters are expanded on the template only, never on the
-    // request/response payload itself.
-    var template = unescape(CopyRequestResponseConfiguration.template());
+    // The template is a single-line setting, so line breaks are written as \n.
+    var template = CopyRequestResponseConfiguration.template().replace("\\n", "\n");
 
     var matcher = PLACEHOLDER.matcher(template);
     var text = new StringBuilder();
     while (matcher.find()) {
       var value = "request".equals(matcher.group(1)) ? request : response;
       if (matcher.group(2) != null) {
-        value = indent(value, indentPrefix(matcher.group(3)));
+        value = indent(value, indentPrefix(matcher.group(2)));
       }
       // quoteReplacement, so that a payload containing $ or \ is copied verbatim
       // and a payload containing a placeholder is not substituted again.
@@ -189,7 +184,7 @@ public class CopyRequestResponseCopyActions {
    * empty, so that no trailing whitespace is copied.
    */
   private static String indent(String text, String prefix) {
-    if (text.isEmpty()) {
+    if (text.isEmpty() || prefix.isEmpty()) {
       return text;
     }
     return text.lines()
@@ -197,50 +192,19 @@ public class CopyRequestResponseCopyActions {
         .collect(Collectors.joining("\n"));
   }
 
-  /**
-   * Resolves the argument of an {@code :indent} placeholder: no argument means
-   * four spaces, a number means that many spaces, anything else is taken
-   * literally (control characters such as \t are expanded).
-   */
-  private static String indentPrefix(String argument) {
-    String prefix;
-    if (argument == null || argument.isEmpty()) {
-      prefix = " ".repeat(DEFAULT_INDENT_WIDTH);
-    } else if (argument.chars().allMatch(Character::isDigit)) {
-      var width = argument.length() > 2 ? MAX_INDENT_WIDTH : Integer.parseInt(argument);
-      prefix = " ".repeat(Math.min(width, MAX_INDENT_WIDTH));
-    } else {
-      prefix = unescape(argument);
+  /** Builds an indent of the given width out of spaces, or tabs if configured. */
+  private static String indentPrefix(String width) {
+    int count;
+    try {
+      count = Math.min(Integer.parseInt(width), MAX_INDENT_WIDTH);
+    } catch (NumberFormatException exc) {
+      count = MAX_INDENT_WIDTH;
     }
-    if (CopyRequestResponseConfiguration.useNonBreakableSpace()) {
-      prefix = prefix.replace(' ', '\u00a0');
+    if (CopyRequestResponseConfiguration.indentWithTabs()) {
+      return "\t".repeat(count);
     }
-    return prefix;
-  }
-
-  /**
-   * Expands the control characters \n, \r, \t, \0 and the escaped backslash \\.
-   * Unknown escape sequences are kept as they are.
-   */
-  private static String unescape(String text) {
-    var unescaped = new StringBuilder(text.length());
-    for (var index = 0; index < text.length(); index++) {
-      var character = text.charAt(index);
-      if (character != '\\' || index + 1 >= text.length()) {
-        unescaped.append(character);
-        continue;
-      }
-      var escaped = text.charAt(++index);
-      switch (escaped) {
-        case 'n' -> unescaped.append('\n');
-        case 'r' -> unescaped.append('\r');
-        case 't' -> unescaped.append('\t');
-        case '0' -> unescaped.append('\0');
-        case '\\' -> unescaped.append('\\');
-        default -> unescaped.append('\\').append(escaped);
-      }
-    }
-    return unescaped.toString();
+    var space = CopyRequestResponseConfiguration.useNonBreakableSpace() ? "\u00a0" : " ";
+    return space.repeat(count);
   }
 
   private static void toClipboard(String text0) {
