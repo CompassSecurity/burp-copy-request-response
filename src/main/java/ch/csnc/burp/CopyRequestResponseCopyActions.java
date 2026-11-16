@@ -8,9 +8,13 @@ import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CopyRequestResponseCopyActions {
+
+  // Control, format, private-use and unassigned characters, except line feed and tab.
+  private static final Pattern NON_PRINTABLE = Pattern.compile("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}&&[^\\n\\t]]");
 
   public static void copyFullFull(List<HttpRequestResponse> requestResponses) {
     requestResponses = requestResponses.stream().map(CopyRequestResponseCopyActions::hideHeaders).toList();
@@ -160,7 +164,10 @@ public class CopyRequestResponseCopyActions {
   }
 
   private static void toClipboard(String text0) {
-    var text1 = text0.replaceAll("\r\n", "\n");
+    var text1 = text0.replace("\r\n", "\n");
+    if (CopyRequestResponseConfiguration.removeNonPrintableCharacters()) {
+      text1 = NON_PRINTABLE.matcher(text1).replaceAll("");
+    }
     var systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     var systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
     var transferText = new StringSelection(text1);

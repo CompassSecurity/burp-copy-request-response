@@ -18,6 +18,8 @@ public class CopyRequestResponseConfiguration {
   private static final String COPY_FULL_HEADER_DEFAULT = "Ctrl+Shift+Alt+C";
   private static final String USE_NBSP_LABEL = "Use Non-Breakable Spaces";
   private static final boolean USE_NBSP_DEFAULT = false;
+  private static final String REMOVE_NON_PRINTABLE_LABEL = "Remove Non-Printable Characters";
+  private static final boolean REMOVE_NON_PRINTABLE_DEFAULT = true;
   private static final String TEMPLATE_LABEL = "Template";
   private static final String TEMPLATE_DEFAULT = "{request}\\n\\n{response}";
   private static final String HIDE_REQUEST_HEADERS_LABEL = "Hide Request Headers";
@@ -28,6 +30,7 @@ public class CopyRequestResponseConfiguration {
   private final static SettingsPanelSetting[] settings = new SettingsPanelSetting[] {
       SettingsPanelSetting.stringSetting(CUT_TEXT_LABEL, CUT_TEXT_DEFAULT),
       SettingsPanelSetting.booleanSetting(USE_NBSP_LABEL, USE_NBSP_DEFAULT),
+      SettingsPanelSetting.booleanSetting(REMOVE_NON_PRINTABLE_LABEL, REMOVE_NON_PRINTABLE_DEFAULT),
       SettingsPanelSetting.stringSetting(COPY_FULL_FULL_OR_SELECTION_HOT_KEY_LABEL,
           COPY_FULL_FULL_OR_SELECTION_HOT_KEY_DEFAULT),
       SettingsPanelSetting.stringSetting(COPY_FULL_HEADER_LABEL, COPY_FULL_HEADER_DEFAULT),
@@ -56,6 +59,10 @@ public class CopyRequestResponseConfiguration {
 
   public static boolean useNonBreakableSpace() {
     return panel.getBoolean(USE_NBSP_LABEL);
+  }
+
+  public static boolean removeNonPrintableCharacters() {
+    return panel.getBoolean(REMOVE_NON_PRINTABLE_LABEL);
   }
 
   public static String copyFullFullOrSelectionHotKey() {
